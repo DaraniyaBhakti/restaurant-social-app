@@ -10,7 +10,7 @@ function RestaurantsTab(props) {
 
     return (
         <View style={styles.container}>
-            <FloatingActionButton onPress={mapBtnClick} title="Add" />
+            <FloatingActionButton onPress={mapBtnClick} name="restaurant" />
         </View>
     )
 }

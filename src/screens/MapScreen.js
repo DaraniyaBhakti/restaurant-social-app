@@ -3,13 +3,13 @@ import { View, Text, StyleSheet } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import axios from 'axios';
 import * as Location from 'expo-location';
-import { PATHS,STRINGS } from './utils/Constants';
+import { PATHS,STRINGS } from '../utils/Constants';
 function MapScreen() {
     const [position, setPosition] = useState({
         latitude: 10,
         longitude: 10,
-        latitudeDelta: 0.0034,
-        longitudeDelta: 0.0034
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.004
     })
     useEffect(() => {
         (async () => {
@@ -23,8 +23,8 @@ function MapScreen() {
             setPosition({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
+                latitudeDelta: 0.001,
+                longitudeDelta: 0.001,
             });
             console.log(position)
         })();
