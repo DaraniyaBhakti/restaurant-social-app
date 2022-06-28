@@ -13,7 +13,7 @@ const ContactListItem = ({contact, navigation}) => {
         await setDoc(friendsRef,{
             id:contact.id,
             friendName:contact.name,
-            phoneNumber:contact.phoneNumbers
+            phoneNumber:contact.phoneNumbers.map(data=>data.number)
         })
         navigation.navigate("Friends")
 

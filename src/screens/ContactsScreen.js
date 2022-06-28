@@ -39,7 +39,7 @@ function ContactsScreen(props) {
             data={contacts}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
-            style={StyleSheet.list}
+            // style={styles.list}
         />
     </View>
   )
