@@ -5,15 +5,16 @@ import { auth, database } from "../config/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 const ContactListItem = ({contact, navigation}) => {
+    const {name,phoneNumber,id} = contact
+    
     const contactSelected = async() => {
-        
         const userRef = doc(database, "users" , auth.currentUser.uid);
-        const friendsRef = doc(userRef, "friends",contact.id)
+        const friendsRef = doc(userRef, "friends",id)
 
         await setDoc(friendsRef,{
-            id:contact.id,
-            friendName:contact.name,
-            phoneNumber:contact.phoneNumbers.map(data=>data.number)
+            id:id,
+            friendName:name,
+            phoneNumber:phoneNumber
         })
         navigation.navigate("Friends")
 
@@ -24,14 +25,14 @@ const ContactListItem = ({contact, navigation}) => {
             <View style={styles.imgCon}>
                 <View style={styles.placeholder}>
                     <Text style={styles.txt}>
-                        {contact?.name[0]}
+                        {name[0]}
                     </Text>
                 </View>
             </View>
             <View style={styles.contactDat}>
-                <Text style={styles.name}>{contact?.name}</Text>
+                <Text style={styles.name}>{name}</Text>
                 <Text style={styles.phoneNumber}>
-                    {contact?.phoneNumbers[0]?.number}
+                    {phoneNumber}
                 </Text>
 
             </View>

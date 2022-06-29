@@ -11,7 +11,6 @@ function RestaurantsTab(props) {
         props.navigation.navigate("Map")
     }
     function restroSelected(){
-
         console.log(restaurant)
         const userRef = doc(database,"users",auth.currentUser.uid);
         updateDoc(userRef, {

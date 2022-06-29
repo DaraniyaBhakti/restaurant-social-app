@@ -6,38 +6,62 @@ import { auth, database } from '../config/firebase';
 import { collection, doc, getDocs, onSnapshot } from 'firebase/firestore';
 
 function FriendsTab(props) {
-  const [friendsList, setFriendsList] = useState()
-  const [users,setUsers] = useState()
-  
-  async function fetchdata() {
+  const [friendsList, setFriendsList] = useState([])
+  const [users, setUsers] = useState()
+  const [restaurant, setRestaurant] = useState([])
+
+  function fetchFriendsData() {
     const userRef = doc(database, "users", auth.currentUser.uid);
     const friendsRef = collection(userRef, "friends");
     onSnapshot(friendsRef, (snapshot) => {
-      const friends = [], oneContact=[];
+      const friends = [];
       snapshot.forEach((doc) => {
-        friends.push({ name: doc.data().friendName, phone: doc.data().id });
-        oneContact.push(doc.data().phoneNumber.map(data => data))
+        friends.push({ name: doc.data().friendName, phoneNumber: doc.data().phoneNumber, id: doc.data().id });
       });
-      console.log('friends', oneContact.join(", "));
       setFriendsList(friends)
     })
-
-    const user = collection(database,'users');
-    // const userSnap = getDocs(user)
-    onSnapshot(user,(snapshot) =>{
-      const users = [];
-      snapshot.forEach((doc) => {
-        users.push(doc.data().phone);
-      });
-      console.log('user', users.join(", "))
-      setUsers(user)
-    })
-
-
   }
+  function fetchUerData(){
+    const user = collection(database, 'users');
+    onSnapshot(user, (snapshot) => {
+      const usersArray = [];
+      snapshot.forEach((doc) => {
+        usersArray.push({ phoneNumber: doc.data().phone, restaurant: doc.data().restaurant });
+      });
+      setUsers(usersArray)
+    })
+  
+  }
+  function getRestaurantData(){
+    const restaurantArray = []
+    let flag = false;
+    for (let j = 0; j < friendsList.length; j++) {
+      let index;
+      for (let i = 0; i < users.length; i++) {
+        if (friendsList[j].phoneNumber === users[i].phoneNumber) {
+          flag = true
+          index = i;
+          break;
+        }
+      }
+      if(flag){
+        restaurantArray.push({ name: friendsList[j].name, phoneNumber: friendsList[j].phoneNumber, restaurant: users[index].restaurant })
+      }else{
+        restaurantArray.push({ name: friendsList[j].name, phoneNumber: friendsList[j].phoneNumber, restaurant:"" })
+      }
+    }
+    setRestaurant(restaurantArray)
+    console.log("restro",restaurant)
+  
+  }
+
   useEffect(() => {
-    fetchdata();
-  }, [])
+    fetchFriendsData();
+    fetchUerData();
+  },[])
+  useEffect(()=>{
+    getRestaurantData();
+  },[])
 
   function friendsbtnClick() {
     props.navigation.navigate("Contacts")
@@ -46,25 +70,30 @@ function FriendsTab(props) {
     return item?.num?.toString() || idx.toString();
   }
   const renderItem = ({ item }) => {
-    return(
+    return (
       <View>
-      <View style={styles.item}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          <Ionicons name='restaurant' size={15} color="black" style={styles.icon}/>
-        <Text style={styles.itemData}>xyz restaurant</Text>
+        <View style={styles.item}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='restaurant' size={15} color="black" style={styles.icon} />
+            if(item.restaurant == "") {
+            <Text style={styles.itemData}>Not going anywhere</Text>  
+            }else{
+              <Text style={styles.itemData}>{item.restaurant}</Text>
+            }
+            
+          </View>
         </View>
-      </View>
-      <View style={styles.line}></View>
+        <View style={styles.line}></View>
       </View>
     )
   }
   return (
     <View style={styles.container}>
       <FlatList
-        data={friendsList}
+        data={restaurant}
         renderItem={renderItem}
-        keyExtractor={keyExtractor} 
+        keyExtractor={keyExtractor}
       />
       <FloatingActionButton onPress={friendsbtnClick} name="person-add" />
     </View>
@@ -75,28 +104,27 @@ export default FriendsTab
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding:'3%',
-    backgroundColor:'white'
+    padding: '3%',
+    backgroundColor: 'white'
   },
-  line:{
-    height:2,
-    backgroundColor:'#d9d9d9',
+  line: {
+    height: 2,
+    backgroundColor: '#d9d9d9',
   },
-  item:{
-    paddingVertical:'3%',
+  item: {
+    paddingVertical: '3%',
+  },
+  itemName: {
+    fontSize: 18,
+    fontWeight: '400'
+  },
+  itemData: {
+    fontSize: 15,
+    fontWeight: '300'
+  },
+  icon: {
+    paddingVertical: 8,
+    paddingHorizontal: 5
 
-  },
-  itemName:{
-    fontSize:18,
-    fontWeight:'400'
-  },
-  itemData:{
-    fontSize:15,
-    fontWeight:'300'
-  },
-  icon:{
-    paddingVertical:8,
-    paddingHorizontal:5
-    
   }
 })
