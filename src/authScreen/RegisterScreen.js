@@ -4,7 +4,7 @@ import { Snackbar } from 'react-native-paper';
 import {auth, database} from '../config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-function RegisterScreen() {
+function RegisterScreen(props) {
 
     const [ registerForm, setRegisterForm ] = useState({
         name:'',

@@ -7,59 +7,51 @@ import { collection, doc, getDocs, onSnapshot } from 'firebase/firestore';
 
 function FriendsTab(props) {
   const [friendsList, setFriendsList] = useState([])
-  const [users, setUsers] = useState()
-  const [restaurant, setRestaurant] = useState([])
+  const [users, setUsers] = useState([])
+  const [restaurant, setRestaurant] = useState([{ name: "XYZ", phoneNumber: "1234567890", restaurant: "PQR" }])
 
   function fetchFriendsData() {
     const userRef = doc(database, "users", auth.currentUser.uid);
     const friendsRef = collection(userRef, "friends");
     onSnapshot(friendsRef, (snapshot) => {
       const friends = [];
-      snapshot.forEach((doc) => {
+      snapshot?.forEach((doc) => {
         friends.push({ name: doc.data().friendName, phoneNumber: doc.data().phoneNumber, id: doc.data().id });
       });
       setFriendsList(friends)
     })
   }
-  function fetchUerData(){
+  function fetchUerData() {
+
     const user = collection(database, 'users');
     onSnapshot(user, (snapshot) => {
       const usersArray = [];
-      snapshot.forEach((doc) => {
+      snapshot?.forEach((doc) => {
         usersArray.push({ phoneNumber: doc.data().phone, restaurant: doc.data().restaurant });
       });
       setUsers(usersArray)
     })
-  
-  }
-  function getRestaurantData(){
-    const restaurantArray = []
-    let flag = false;
-    for (let j = 0; j < friendsList.length; j++) {
-      let index;
-      for (let i = 0; i < users.length; i++) {
-        if (friendsList[j].phoneNumber === users[i].phoneNumber) {
-          flag = true
-          index = i;
-          break;
-        }
-      }
-      if(flag){
-        restaurantArray.push({ name: friendsList[j].name, phoneNumber: friendsList[j].phoneNumber, restaurant: users[index].restaurant })
-      }else{
-        restaurantArray.push({ name: friendsList[j].name, phoneNumber: friendsList[j].phoneNumber, restaurant:"" })
-      }
-    }
-    setRestaurant(restaurantArray)
-    console.log("restro",restaurant)
-  
-  }
 
+  }
+  function getRestaurantData() {
+    const restaurantArray = []
+    friendsList.forEach((value) => {
+      (!!(users.find(obj => obj.phoneNumber == value.phoneNumber)))
+        ?
+        users.map(data => {
+          data.phoneNumber == value.phoneNumber
+            ? restaurantArray.push({ name: value.name, phoneNumber: value.phoneNumber, restaurant: data.restaurant })
+            : null
+        })
+        : restaurantArray.push({ name: value.name, phoneNumber: value.phoneNumber, restaurant: "" })
+
+    })
+    setRestaurant(restaurantArray);
+
+  }
   useEffect(() => {
     fetchFriendsData();
     fetchUerData();
-  },[])
-  useEffect(()=>{
     getRestaurantData();
   },[])
 
@@ -76,12 +68,12 @@ function FriendsTab(props) {
           <Text style={styles.itemName}>{item.name}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Ionicons name='restaurant' size={15} color="black" style={styles.icon} />
-            if(item.restaurant == "") {
-            <Text style={styles.itemData}>Not going anywhere</Text>  
-            }else{
-              <Text style={styles.itemData}>{item.restaurant}</Text>
+            {item.restaurant == "" ?
+              <Text style={[styles.itemData, styles.itemNotAvailable]}>Not going anywhere</Text>
+              :
+              <Text style={[styles.itemData, { color: '#FBE042' }]}>Going to {item.restaurant}</Text>
             }
-            
+
           </View>
         </View>
         <View style={styles.line}></View>
@@ -116,11 +108,15 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 18,
-    fontWeight: '400'
+    fontWeight: '500'
   },
   itemData: {
-    fontSize: 15,
-    fontWeight: '300'
+    fontSize: 18,
+    fontWeight: '400'
+  },
+  itemNotAvailable: {
+    color: 'red'
+
   },
   icon: {
     paddingVertical: 8,

@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect } from 'react'
+import React, { useState, createContext, useContext, useEffect, useRef } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -50,7 +50,8 @@ function HomeStack() {
           initialRouteName='Restaurant'
           screenOptions={{
             tabBarStyle: { backgroundColor: '#FBE042' },
-            tabBarLabelStyle: { fontSize: 15, fontWeight: '600' }
+            tabBarLabelStyle: { fontSize: 15, fontWeight: '600' },
+            
           }}
         >
           <Tabs.Screen name='Restaurants' component={RestaurantsTab} />
@@ -111,6 +112,7 @@ function RootNavigator() {
 }
 
 export default function App() {
+
   return (
     <AuthenticatedUserProvider>
       <RootNavigator/>
@@ -118,5 +120,8 @@ export default function App() {
 
   );
 }
+
+
+
 
 
